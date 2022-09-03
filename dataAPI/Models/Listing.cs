@@ -13,11 +13,12 @@ namespace dataAPI.Models
         public string tagNo { get; set; }
         public string Url { get; set; }
         public bool IsActive { get; set; }
-        public realEstateTypes ReType { get; set; }
-        public businessOptions options { get; set; }
+        public string ReType { get; set; }
+        public string options { get; set; }
         public propertyDetails ppDetails { get; set; }
 
     }
+    /*
     public enum realEstateTypes
     {
         Residential,
@@ -28,4 +29,5 @@ namespace dataAPI.Models
         Rent,
         Sale
     }
+    */
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,8 +18,83 @@ namespace dataAPI.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySql("server=47.74.86.28;port=3306;user=dbuser;password=MI4m481OuUJ1D9KijI921KFMRFHndvNi;database=TradeMeCrawler", Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.1.48-mariadb"));
+                optionsBuilder.UseMySql("server=47.74.86.28;port=3306;user=dbuser;password=MI4m481OuUJ1D9KijI921KFMRFHndvNi;database=james", Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.1.48-mariadb"));
             }
+
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Listing mode
+            modelBuilder.Entity<Listing>(entity =>
+            {
+                entity.HasKey(e => e.Guid);
+                entity.Property(e => e.tagNo);//.IsRequired()
+                entity.Property(e => e.Url);
+                entity.Property(e => e.IsActive);
+                entity.Property(e => e.ReType);
+                entity.Property(e => e.options);
+                entity.HasOne(x => x.ppDetails).WithOne(c => c.Listing).HasForeignKey<propertyDetails>(p => p.Guid);
+
+            });
+
+            // propertyDetails mode
+            modelBuilder.Entity<propertyDetails>(entity =>
+            {
+                entity.HasKey(e => e.PPDguid);
+                entity.Property(e => e.heading);
+                entity.Property(e => e.AskPrice);
+                entity.Property(e => e.Address);
+                entity.Property(e => e.Descriptions);
+                entity.Property(e => e.KeyFeatures);
+                entity.Property(e => e.PictureUrls);
+                entity.Property(e => e.Contactz);
+                entity.Property(e => e.UpdateTime);
+
+                entity.Property(e => e.BedRoom);
+                entity.Property(e => e.Office);
+                entity.Property(e => e.LivingRoom);
+                entity.Property(e => e.Shower);
+                entity.Property(e => e.Carpark);
+                entity.Property(e => e.Toilet);
+
+                entity.Property(e => e.PropertyType);
+                entity.Property(e => e.PropertyUse);
+                entity.Property(e => e.SaleMethod);
+                entity.Property(e => e.OpenHomeSessions);
+                entity.Property(e => e.FloorArea);
+                entity.Property(e => e.Reference);
+
+            });
+
+            // keyText mode
+            modelBuilder.Entity<keyText>(entity =>
+            {
+                entity.HasKey(e => e.Textguid);
+                entity.Property(e => e.kText);
+                entity.HasOne(d => d.propertyDetails)
+                  .WithMany(p => p.KeyFeatures);
+            });
+
+            // Contacts mode
+            modelBuilder.Entity<Contacts>(entity =>
+            {
+                entity.HasKey(e => e.Contaxtsguid);
+                entity.Property(e => e.Name);
+                entity.HasOne(d => d.propertyDetails)
+                  .WithMany(p => p.Contactz);
+            });
+            // PicUrl mode
+            modelBuilder.Entity<PicUrl>(entity =>
+            {
+                entity.HasKey(e => e.Picguid);
+                entity.Property(e => e.PictureUrl);
+                entity.HasOne(d => d.propertyDetails)
+                  .WithMany(p => p.PictureUrls);
+            });
+
 
         }
 

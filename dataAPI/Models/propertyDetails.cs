@@ -13,19 +13,19 @@ namespace dataAPI.Models
         public string heading { get; set; }
         public string AskPrice { get; set; }
         public string Address { get; set; }
-        public string descriptions { get; set; }
-        public List<keyText> KeyFeatures { get; set; }
-        public List<PicUrl> pictureUrl { get; set; }
-        public List<Contacts> contacts { get; set; }
-        public DateTime updateTime { get; set; }
+        public string Descriptions { get; set; }
+        public ICollection<keyText> KeyFeatures { get; set; }
+        public ICollection<PicUrl> PictureUrls { get; set; }
+        public ICollection<Contacts> Contactz { get; set; }
+        public DateTime UpdateTime { get; set; }
 
         //room detials
-        public int bedRoom { get; set; }
-        public int office { get; set; }
+        public int BedRoom { get; set; }
+        public int Office { get; set; }
         public int LivingRoom { get; set; }
-        public int shower { get; set; }
+        public int Shower { get; set; }
         public int Carpark { get; set; }
-        public int toilet { get; set; }
+        public int Toilet { get; set; }
 
         // Further Details
         public string PropertyType { get; set; }
@@ -35,7 +35,9 @@ namespace dataAPI.Models
         public string FloorArea { get; set; }
         public string Reference { get; set; }
 
-
+        //reference to Listing
+        public string Guid { get; set; }
+        public Listing Listing { get; set; }
     };
 
     public class keyText
@@ -43,8 +45,10 @@ namespace dataAPI.Models
         [Key]
         public Guid Textguid { get; set; }
         public string kText {get;set;}
-        public Guid PPDguid { get; set; }
-        public propertyDetails propertyDetails { get; set; }
+        
+        //public Guid PPDguid { get; set; }
+        public virtual propertyDetails propertyDetails { get; set; }
+
     }
 
     public class Contacts
@@ -53,16 +57,17 @@ namespace dataAPI.Models
         public Guid Contaxtsguid { get; set; }
 
         public string Name { get; set; }
-        public string phone { get; set; }
-        public Guid PPDguid { get; set; }
-        public propertyDetails propertyDetails { get; set; }
+        public int phone { get; set; }
+
+        // public Guid PPDguid { get; set; }
+        public virtual propertyDetails propertyDetails { get; set; }
     }
     public class PicUrl
     {
         [Key]
         public Guid Picguid { get; set; }
         public string PictureUrl { get; set; }
-        public Guid PPDguid { get; set; }
-        public propertyDetails propertyDetails { get; set; }
+       // public Guid PPDguid { get; set; }
+        public virtual propertyDetails propertyDetails { get; set; }
     }
 }

@@ -1,3 +1,6 @@
+using dataAPI.Contracts;
+using dataAPI.Models;
+using dataAPI.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -26,8 +29,15 @@ namespace dataAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped<DB>();
+            services.AddScoped<Listing>();
+            services.AddScoped<propertyDetails>();
+            services.AddScoped<keyText>();
+            services.AddScoped<Contacts>();
+            services.AddScoped<PicUrl>();
+            services.AddScoped<ListingServices>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "dataAPI", Version = "v1" });
