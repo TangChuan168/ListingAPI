@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace dataAPI.Controllers
@@ -17,21 +18,22 @@ namespace dataAPI.Controllers
     [ApiController]
     public class Listingdownload : ControllerBase
     {
-       /* private readonly ListingServices _ListingService;
-        Listingdownload(
+        
+        private readonly ListingServices _ListingService;
+    public Listingdownload(
             ListingServices sv
         )
         {
             _ListingService = sv;
         }
        
-        [HttpGet]
+        [HttpGet("geturl")]
         public void GetUrl()
         {
-            var res = _ListingService.downLoadListing();
+            _ListingService.downLoadListing();
         }
-        */
-        [HttpGet]
+       
+        [HttpGet("test")]
         public ReadOnlyCollection<IWebElement> test()
         {
             var driver = new ChromeDriver("C:\\coding2022\\BACK-endAPI\\ListingAPI\\dataAPI");
@@ -39,13 +41,23 @@ namespace dataAPI.Controllers
             driver.Navigate().GoToUrl(residentialSale);
             WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 4));
             wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id='listing_grid']/div/div/div")));
-            
-            ReadOnlyCollection<IWebElement> elements = driver.FindElements(By.XPath("//*[@id='listing_grid']/div/div/div"));
+
+            List<string> Urls = new List<string>();
+            ReadOnlyCollection<IWebElement> elements = driver.
+            FindElements(By.CssSelector("div.button-property-icon a.btn"));
+            foreach (var j in elements)
+            {
+                Urls.Add(j.GetAttribute("href"));
+            }
 
             //find if next page is existing?
-            var IsNextPage = driver.FindElement(By.XPath("//*[@id='listing_grid']/div/pagination-template/nav/ul/li[3]/a"));
-            IsNextPage.Click();
+            ReadOnlyCollection<IWebElement> element2 = driver.FindElements(By.XPath("//*[@id='listing_grid']/div/pagination-template/nav/ul/li[4]/a"));
+            var IsNextPage3 = driver.FindElement(By.CssSelector("a[aria-label='Next']"));
+            
+            driver.ExecuteScript("arguments[0].click();", IsNextPage3);
+            Thread.Sleep(3000);
             return elements;
         }
+       
     }
 }
