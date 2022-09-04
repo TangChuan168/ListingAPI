@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace dataAPI.Services
@@ -45,53 +46,22 @@ namespace dataAPI.Services
             var commercialSale = "https://www.jameslaw.co.nz/commercial-sale";
             var commercialLease = "https://www.jameslaw.co.nz/commercial-lease";
 
-            var ResidentialSale = this.residentialSale(residentialSale);
-            var ResidentialRent = this.residentialRent(residentialRent);
-            var CommercialSale = this.commercialSale(commercialSale);
-            var CommercialRent = this.commercialRent(commercialLease);
-
+            var ResidentialSale = this.getUrls(residentialSale,"residencialSale");
+            var ResidentialRent = this.getUrls(residentialRent,"residencialRent");
+            var CommercialSale = this.getUrls(commercialSale,"commercialSale");
+            var CommercialRent = this.getUrls(commercialLease,"commercialRent");
+            Console.WriteLine("finished@@@");
         }
 
-        public List<urlData> residentialSale(string url)
+        public List<urlData> getUrls(string url, string types)
         {
             driver.Navigate().GoToUrl(url);
             WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 5));
             wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id='listing_grid']/div/div/div")));
-            int Pages = GetPageNumber(driver, "residencialSale");
+            int Pages = GetPageNumber(driver,types);
             var res = getListing(Pages,driver);
             return res;
         }
-
-        public List<urlData> residentialRent(string url)
-        {
-            driver.Navigate().GoToUrl(url);
-            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 5));
-            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id='listing_grid']/div/div/div")));
-            int Pages = GetPageNumber(driver, "residencialRent");
-            var res = getListing(Pages, driver);
-            return res;
-        }
-
-        public List<urlData> commercialSale(string url)
-        {
-            driver.Navigate().GoToUrl(url);
-            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 5));
-            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id='listing_grid']/div/div/div")));
-            int Pages = GetPageNumber(driver, "commercialSale");
-            var res = getListing(Pages, driver);
-            return res;
-        }
-
-        public List<urlData> commercialRent(string url)
-        {
-            driver.Navigate().GoToUrl(url);
-            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 5));
-            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id='listing_grid']/div/div/div")));
-            int Pages = GetPageNumber(driver, "commercialRent");
-            var res = getListing(Pages, driver);
-            return res;
-        }
-
 
         //this Function is using for calculate the total pages existing 
         public int GetPageNumber(ChromeDriver driver,string option)
@@ -131,6 +101,7 @@ namespace dataAPI.Services
             {
                 try
                 {
+                    Thread.Sleep(3000);
                     ReadOnlyCollection<IWebElement> elements = driver.FindElements(By.CssSelector("div.button-property-icon a.btn"));
                     foreach (var j in elements)
                     {
@@ -154,8 +125,5 @@ namespace dataAPI.Services
             }
             return Urls;
         }
-
-
-
     }
 }
