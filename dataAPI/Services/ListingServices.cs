@@ -42,7 +42,6 @@ namespace dataAPI.Services
         {
             var residentialSale = "https://www.jameslaw.co.nz/residential";
             var residentialRent = "https://www.jameslaw.co.nz/residential-rent";
-
             var commercialSale = "https://www.jameslaw.co.nz/commercial-sale";
             var commercialLease = "https://www.jameslaw.co.nz/commercial-lease";
 
@@ -53,48 +52,48 @@ namespace dataAPI.Services
 
         }
 
-        public List<string> residentialSale(string url)
+        public List<urlData> residentialSale(string url)
         {
             driver.Navigate().GoToUrl(url);
             WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 5));
             wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id='listing_grid']/div/div/div")));
             int Pages = GetPageNumber(driver, "residencialSale");
-            var res = getResidentialSale(Pages,driver);
+            var res = getListing(Pages,driver);
             return res;
         }
 
-        public List<string> residentialRent(string url)
+        public List<urlData> residentialRent(string url)
         {
             driver.Navigate().GoToUrl(url);
             WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 5));
             wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id='listing_grid']/div/div/div")));
             int Pages = GetPageNumber(driver, "residencialRent");
-            var res = getResidentialRent(Pages, driver);
+            var res = getListing(Pages, driver);
             return res;
         }
 
-        public List<string> commercialSale(string url)
+        public List<urlData> commercialSale(string url)
         {
             driver.Navigate().GoToUrl(url);
             WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 5));
             wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id='listing_grid']/div/div/div")));
             int Pages = GetPageNumber(driver, "commercialSale");
-            var res = getcommercialSale(Pages, driver);
+            var res = getListing(Pages, driver);
             return res;
         }
 
-        public List<string> commercialRent(string url)
+        public List<urlData> commercialRent(string url)
         {
             driver.Navigate().GoToUrl(url);
             WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 5));
             wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id='listing_grid']/div/div/div")));
             int Pages = GetPageNumber(driver, "commercialRent");
-            var res = getcommercialRent(Pages, driver);
+            var res = getListing(Pages, driver);
             return res;
         }
 
 
-        //this Function is use for calculate how many total pages exist 
+        //this Function is using for calculate the total pages existing 
         public int GetPageNumber(ChromeDriver driver,string option)
         {
             var ReSale = "/html/body/app-root/main/app-residential/section[2]/div/div[1]/div/div/div/span";
@@ -124,101 +123,34 @@ namespace dataAPI.Services
             }
         }
 
-        //loop all pages and grab all url
-        public List<string> getResidentialSale(int pages, ChromeDriver driver)
+        public List<urlData> getListing(int pages, ChromeDriver driver)
         {
-            List<string> Urls = new List<string>(); // use to store listings for each pages
+            List<urlData> Urls = new List<urlData>(); // use to store listings for each pages
 
             for (int k = 1; k <= pages; k++)
+            {
+                try
                 {
-                 ReadOnlyCollection<IWebElement> elements = driver.FindElements(By.CssSelector("div.button-property-icon a.btn"));          
-                 foreach(var j in elements)
+                    ReadOnlyCollection<IWebElement> elements = driver.FindElements(By.CssSelector("div.button-property-icon a.btn"));
+                    foreach (var j in elements)
                     {
-                        Urls.Add(j.GetAttribute("href"));
-                    }
-
-                //find next page and if this the page is the last page stop find next page and click it
-                if (k < pages) {
-                    var NextPage = driver.FindElement(By.CssSelector("a[aria-label='Next']"));
-                    driver.ExecuteScript("arguments[0].click();", NextPage);
-                }
-            }
-            return Urls;
-        }
-
-        public List<string> getResidentialRent(int pages, ChromeDriver driver)
-        {
-            List<string> Urls = new List<string>(); // use to store listings for each pages
-
-            for (int k = 1; k <= pages; k++)
-            {
-                ReadOnlyCollection<IWebElement> elements = driver
-                .FindElements(By.CssSelector("div.button-property-icon a.btn"));
-                foreach (var j in elements)
-                {
-                    Urls.Add(j.GetAttribute("href"));
-                }
-
-                //
-                if (k < pages)
-                {
-                    var NextPage = driver.FindElement(By.CssSelector("a[aria-label='Next']"));
-                    driver.ExecuteScript("arguments[0].click();", NextPage);
-                }
-            }
-            return Urls;
-        }
-
-        public List<string> getcommercialSale(int pages, ChromeDriver driver)
-        {
-            List<string> Urls = new List<string>(); // use to store listings for each pages
-
-            for (int k = 1; k <= pages; k++)
-            {
-                ReadOnlyCollection<IWebElement> elements = driver.FindElements(By.CssSelector("div.button-property-icon a.btn"));
-                foreach (var j in elements)
-                {
-                    Urls.Add(j.GetAttribute("href"));
-                }
-
-                //find next page and if this the page is the last page stop find next page and click it
-                if (k < pages)
-                {
-                    var NextPage = driver.FindElement(By.CssSelector("a[aria-label='Next']"));
-                    driver.ExecuteScript("arguments[0].click();", NextPage);
-                }
-            }
-            return Urls;
-        }
-
-        public List<string> getcommercialRent(int pages, ChromeDriver driver)
-        {
-            List<string> Urls = new List<string>(); // use to store listings for each pages
-
-            for (int k = 1; k <= pages; k++)
-            {
-                ReadOnlyCollection<IWebElement> elements = driver.FindElements(By.CssSelector("div.button-property-icon a.btn"));
-                foreach (var j in elements)
-                {
-                    try
-                    {
-                        var data = j.GetAttribute("href");
-                        //var url = j.GetAttribute("href") != null ? j.GetAttribute("href") : "no DATA";
+                        var data = new urlData { id = k, url = j.GetAttribute("href") };
                         Urls.Add(data);
                     }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("no more node!!!!!!!!!!!!!!!!!!!!");
-                        Console.WriteLine(e);
-                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Exception");
+                    Console.WriteLine(e);
                 }
 
                 //find next page and if this the page is the last page stop find next page and click it
                 if (k < pages)
                 {
-                    var NextPage = driver.FindElement(By.CssSelector("a[aria-label='Next']"));
+                    
+                    var NextPage = driver.FindElement(By.CssSelector("li.page-item a[aria-label='Next']"));
                     driver.ExecuteScript("arguments[0].click();", NextPage);
-                }
+                };
             }
             return Urls;
         }

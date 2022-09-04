@@ -1,4 +1,5 @@
-﻿using dataAPI.Services;
+﻿using dataAPI.Models;
+using dataAPI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OpenQA.Selenium;
@@ -34,29 +35,42 @@ namespace dataAPI.Controllers
         }
        
         [HttpGet("test")]
-        public ReadOnlyCollection<IWebElement> test()
+        public List<urlData> test()
         {
             var driver = new ChromeDriver("C:\\coding2022\\BACK-endAPI\\ListingAPI\\dataAPI");
-            var residentialSale = "https://www.jameslaw.co.nz/residential";
-            driver.Navigate().GoToUrl(residentialSale);
+            //var residentialSale = "https://www.jameslaw.co.nz/residential";
+            var commercialLease = "https://www.jameslaw.co.nz/commercial-lease";
+            driver.Navigate().GoToUrl(commercialLease);
             WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 4));
             wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id='listing_grid']/div/div/div")));
+            List<urlData> Urls = new List<urlData>();
 
-            List<string> Urls = new List<string>();
-            ReadOnlyCollection<IWebElement> elements = driver.
-            FindElements(By.CssSelector("div.button-property-icon a.btn"));
-            foreach (var j in elements)
+            for (int k = 1; k <= 56; k++)
             {
-                Urls.Add(j.GetAttribute("href"));
-            }
+                try
+                {
+                    Thread.Sleep(3000);
+                    ReadOnlyCollection<IWebElement> elements = driver.FindElements(By.CssSelector("div.button-property-icon a.btn"));                  
+                    foreach (var j in elements)
+                    {
+                        var data = new urlData { id = k, url = j.GetAttribute("href") };
+                        Urls.Add(data);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Exception");
+                    Console.WriteLine(e);
+                }
 
-            //find if next page is existing?
-            ReadOnlyCollection<IWebElement> element2 = driver.FindElements(By.XPath("//*[@id='listing_grid']/div/pagination-template/nav/ul/li[4]/a"));
-            var IsNextPage3 = driver.FindElement(By.CssSelector("a[aria-label='Next']"));
-            
-            driver.ExecuteScript("arguments[0].click();", IsNextPage3);
-            Thread.Sleep(3000);
-            return elements;
+                //find next page and if this the page is the last page stop find next page and click it
+                if (k < 56)
+                {
+                    var NextPage = driver.FindElement(By.CssSelector("li.page-item a[aria-label='Next']"));
+                    driver.ExecuteScript("arguments[0].click();", NextPage);
+                };
+            }
+            return Urls;
         }
        
     }
