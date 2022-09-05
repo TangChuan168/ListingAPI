@@ -39,7 +39,7 @@ namespace dataAPI.Services
         }
      
 
-        public void downLoadListing()
+        public List<Listing> downLoadListing()
         {
             var residentialSale = "https://www.jameslaw.co.nz/residential";
             var residentialRent = "https://www.jameslaw.co.nz/residential-rent";
@@ -51,8 +51,9 @@ namespace dataAPI.Services
             //var CommercialSale = this.getUrls(commercialSale,"commercialSale");
             //var CommercialRent = this.getUrls(commercialLease,"commercialRent");
 
-            //var data = getListingDetials(driver, ResidentialSale);
-            Console.WriteLine("finished@@@");
+            var data= getListingDetials(driver, ResidentialSale);
+            return data;
+            
         }
 
         public List<urlData> getUrls(string url, string types)
@@ -95,6 +96,19 @@ namespace dataAPI.Services
             }
         }
 
+        //this function to identify un existing element and grab value
+        public string valueFind(ChromeDriver driver, string xpath)
+        {
+            try
+            {
+                return driver.FindElement(By.XPath(xpath)).Text;
+            }catch(Exception e)
+            {
+                Console.WriteLine(e);
+                return "";
+            }           
+        }
+
         public List<urlData> getListing(int pages, ChromeDriver driver)
         {
             List<urlData> Urls = new List<urlData>(); // use to store listings for each pages
@@ -131,111 +145,145 @@ namespace dataAPI.Services
         public List<Listing> getListingDetials(ChromeDriver driver,List<urlData> data)
         {
             var ListingDatas = new List<Listing>();
-            foreach(var Listing in data)
             {
-
-                driver.Navigate().GoToUrl(Listing.url);
-                Thread.Sleep(2500);
-                WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 4));
-                wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id='property']/div[9]")));
-
-                var Heading = driver.FindElement(By.XPath("//*[@id='home']/div[1]/div[1]")).Text;          
-                var AskPrice = driver.FindElement(By.XPath("//*[@id=\"home\"]/div[1]/div[2]/span[1]")).Text;
-                var Address = driver.FindElement(By.XPath("//*[@id=\"property\"]/div[1]/div/div")).Text;
-                var BedRoom = driver.FindElement(By.XPath("//*[@id=\"property\"]/div[2]/div[1]/div[1]/span[1]")).Text;
-                var Couch = driver.FindElement(By.XPath("//*[@id=\"property\"]/div[2]/div[1]/div[1]/span[2]")).Text;
-                var Bath = driver.FindElement(By.XPath("//*[@id=\"property\"]/div[2]/div[1]/div[1]/span[3]")).Text;
-                var Garage = driver.FindElement(By.XPath("//*[@id='property]/div[2]/div[1]/div[1]/span[4]")).Text;
-                var Study = driver.FindElement(By.XPath("//*[@id='property']/div[2]/div[1]/div[1]/span[5]")).Text;
-                var Toilet = driver.FindElement(By.XPath("//*[@id='property']/div[2]/div[1]/div[1]/span[6]")).Text;
-                var Descriptions = driver.FindElement(By.XPath("//*[@id=\"property\"]/div[2]/div[1]/div[2]")).Text;
-
-                //Key features
-                ReadOnlyCollection<IWebElement> Features = driver.FindElements(By.XPath("//*[@id='property']/div[3]/div[2]/ul/li"));
-                var KeyFeatures = new List<keyText>();
-                foreach (var element in Features)
+                foreach (var Listing in data)
                 {
 
-                    KeyFeatures.Add(new keyText { kText = element.Text });
-                };
-                //further detials
-                var PropertyType = driver.FindElement(By.XPath("//*[@id='property']/div[4]/div[2]/table/tbody/tr[1]/td[2]")).Text;
-                var PropertyUse = driver.FindElement(By.XPath("//*[@id='property']/div[4]/div[2]/table/tbody/tr[2]/td[2]")).Text;
-                var SaleMethod = driver.FindElement(By.XPath("//*[@id='property']/div[4]/div[2]/table/tbody/tr[3]/td[2]")).Text;
-                var OpenHomeSessions = driver.FindElement(By.XPath("//*[@id='property']/div[4]/div[2]/table/tbody/tr[4]/td[2]")).Text;
-                var FloorArea = driver.FindElement(By.XPath("//*[@id='property']/div[4]/div[2]/table/tbody/tr[5]/td[2]")).Text;
-                var Reference = driver.FindElement(By.XPath("//*[@id='property']/div[4]/div[2]/table/tbody/tr[6]/td[2]")).Text;
+                    driver.Navigate().GoToUrl(Listing.url);
+                    Thread.Sleep(3500);
+                    //WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 4));
+                    //wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id='property']/div[9]")));
 
-                //Contacts
-                var Names = driver.FindElements(By.XPath("//*[@id='property']/div[16]/div[2]/div/div[2]/div[1]"));
-                var phones = driver.FindElements(By.XPath("//*[@id='property']/div[16]/div[2]/div/div[2]/a"));
-                var Contactz = new List<Contacts>();
-                foreach (var name in Names)
-                {
-                    Contactz.Add(new Contacts { Contaxtsguid = Guid.NewGuid(), Name =name.Text});
-                }
-                List<string> phonez = new List<string>();
-                foreach(var ph in phones)
-                {
-                    phonez.Add(ph.Text);
-                }
-                var count = Contactz.Count();
+                    var Heading = driver.FindElement(By.XPath("//*[@id='home']/div[1]/div[1]")).Text;
+                    var AskPrice = driver.FindElement(By.XPath("//*[@id=\"home\"]/div[1]/div[2]/span[1]")).Text;
+                    var Address = driver.FindElement(By.XPath("//*[@id=\"property\"]/div[1]/div/div")).Text;
+                    var Descriptions = driver.FindElement(By.XPath("//*[@id=\"property\"]/div[2]/div[1]/div[2]")).Text;
 
-                for(var i =0; i < count; i++)
-                {
-                    Contactz[i].phone = phonez[i];
-                }
+                    string bedRoom ="";
+                    string couch = "";
+                    string bath = "";
+                    string garage = "";
+                    string study = "";
+                    string toilet = "";
 
-                //pictures
-                var PicsData = driver.FindElements(By.XPath("//*[@id='property']/div[9]/a"));
-                var Pictures = new List<PicUrl>();
+                    string PropertyType = "";
+                    string PropertyUse = "";
+                    string SaleMethod = "";
+                    string OpenHomeSessions = "";
+                    string FloorArea = "";
+                    string Reference = "";
 
-                foreach(var pic in PicsData)
-                {
-                    Pictures.Add(new PicUrl { Picguid = Guid.NewGuid(), PictureUrl = pic.GetAttribute("href")});
-                }
+                    string bedroomXpath = "//*[@id=\"property\"]/div[2]/div[1]/div[1]/span[1]";
+                    string couchXpath = "//*[@id=\"property\"]/div[2]/div[1]/div[1]/span[2]";
+                    string bathXpath = "//*[@id=\"property\"]/div[2]/div[1]/div[1]/span[3]";
+                    string garageXpath = "//*[@id='property]/div[2]/div[1]/div[1]/span[4]";
+                    string studyXpath = "//*[@id='property']/div[2]/div[1]/div[1]/span[5]";
+                    string toiletXpath = "//*[@id='property']/div[2]/div[1]/div[1]/span[6]";
 
-                //add all values to Model
+                    string PropertyTypeXpath = "//*[@id='property']/div[4]/div[2]/table/tbody/tr[1]/td[2]";
+                    string PropertyUseXpath = "//*[@id='property']/div[4]/div[2]/table/tbody/tr[2]/td[2]";
+                    string SaleMethodXpath = "//*[@id='property']/div[4]/div[2]/table/tbody/tr[3]/td[2]";
+                    string OpenHomeSessionsXpath = "//*[@id='property']/div[4]/div[2]/table/tbody/tr[4]/td[2]";
+                    string FloorAreaXpath = "//*[@id='property']/div[4]/div[2]/table/tbody/tr[5]/td[2]";
+                    string ReferenceXpath = "//*[@id='property']/div[4]/div[2]/table/tbody/tr[6]/td[2]";
 
-                var PropertyDetials = new propertyDetails
-                {
-                    PPDguid = Guid.NewGuid(),
-                    heading = Heading,
-                    AskPrice = AskPrice,
-                    Address = Address,
-                    Descriptions = Descriptions,
-                    KeyFeatures = KeyFeatures,
-                    PictureUrls = Pictures,
-                    Contactz = Contactz,
-                    UpdateTime = DateTime.Now,
+                    bedRoom = this.valueFind(driver, bedroomXpath);
+                    couch = this.valueFind(driver, couchXpath);
+                    bath = this.valueFind(driver, bathXpath);
+                    garage = this.valueFind(driver, garageXpath);
+                    study = this.valueFind(driver, studyXpath);
+                    toilet = this.valueFind(driver, toiletXpath);
 
-                    BedRoom = BedRoom,
-                    Couch = Couch,
-                    Bath = Bath,
-                    Garage = Garage,
-                    Study = Study,
-                    Toilet = Toilet,
+                    PropertyType = this.valueFind(driver, PropertyTypeXpath);
+                    PropertyUse = this.valueFind(driver, PropertyUseXpath);
+                    SaleMethod = this.valueFind(driver, SaleMethodXpath);
+                    OpenHomeSessions = this.valueFind(driver, OpenHomeSessionsXpath);
+                    FloorArea = this.valueFind(driver, FloorAreaXpath);
+                    Reference = this.valueFind(driver, ReferenceXpath);
 
-                    PropertyType= PropertyType,
-                    PropertyUse= PropertyUse,
-                    SaleMethod= SaleMethod,
-                    OpenHomeSessions= OpenHomeSessions,
-                    FloorArea= FloorArea,
-                    Reference= Reference
-                };
+                    //Key features
+                    ReadOnlyCollection<IWebElement> Features = driver.FindElements(By.XPath("//*[@id='property']/div[3]/div[2]/ul/li"));
+                    var KeyFeatures = new List<keyText>();
+                    foreach (var element in Features)
+                    {
 
-                var Listing1 = new Listing
-                {
-                    Guid = Guid.NewGuid(),
-                    Url = Listing.url,
-                    IsActive = true,
-                    ReType = "Residential",
-                    options = "Rent",
-                    ppDetails = PropertyDetials
-                };
+                        KeyFeatures.Add(new keyText { kText = element.Text });
+                    };
+                    //further detials
 
-                ListingDatas.Add(Listing1);
 
+                    //Contacts
+                    var Names = driver.FindElements(By.XPath("//*[@id='property']/div[16]/div[2]/div/div[2]/div[1]"));
+                    var phones = driver.FindElements(By.XPath("//*[@id='property']/div[16]/div[2]/div/div[2]/a"));
+                    var Contactz = new List<Contacts>();
+                    foreach (var name in Names)
+                    {
+                        Contactz.Add(new Contacts { Contaxtsguid = Guid.NewGuid(), Name = name.Text });
+                    }
+                    List<string> phonez = new List<string>();
+                    foreach (var ph in phones)
+                    {
+                        phonez.Add(ph.Text);
+                    }
+                    var count = Contactz.Count();
+
+                    for (var i = 0; i < count; i++)
+                    {
+                        Contactz[i].phone = phonez[i];
+                    }
+
+                    //pictures
+                    var PicsData = driver.FindElements(By.XPath("//*[@id='property']/div[9]/a"));
+                    var Pictures = new List<PicUrl>();
+
+                    foreach (var pic in PicsData)
+                    {
+                        Pictures.Add(new PicUrl { Picguid = Guid.NewGuid(), PictureUrl = pic.GetAttribute("href") });
+                    }
+
+                    //add all values to Model
+
+                    var PropertyDetials = new propertyDetails
+                    {
+                        PPDguid = Guid.NewGuid(),
+                        heading = Heading,
+                        AskPrice = AskPrice,
+                        Address = Address,
+                        Descriptions = Descriptions,
+                        KeyFeatures = KeyFeatures,
+                        PictureUrls = Pictures,
+                        Contactz = Contactz,
+                        UpdateTime = DateTime.Now,
+
+                        BedRoom = bedRoom,
+                        Couch = couch,
+                        Bath = bath,
+                        Garage = garage,
+                        Study = study,
+                        Toilet = toilet,
+
+                        PropertyType = PropertyType,
+                        PropertyUse = PropertyUse,
+                        SaleMethod = SaleMethod,
+                        OpenHomeSessions = OpenHomeSessions,
+                        FloorArea = FloorArea,
+                        Reference = Reference
+                    };
+
+                    var Listing1 = new Listing
+                    {
+                        Guid = Guid.NewGuid(),
+                        Url = Listing.url,
+                        IsActive = true,
+                        ReType = "Residential",
+                        options = "Rent",
+                        ppDetails = PropertyDetials
+                    };
+
+                    ListingDatas.Add(Listing1);
+
+
+                }             
             }
             return ListingDatas;
         }
