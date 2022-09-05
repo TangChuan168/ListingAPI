@@ -19,38 +19,40 @@ namespace dataAPI.Controllers
     [ApiController]
     public class Listingdownload : ControllerBase
     {
-        
+
         private readonly ListingServices _ListingService;
-    public Listingdownload(
-            ListingServices sv
-        )
+        public Listingdownload(
+                ListingServices sv
+            )
         {
             _ListingService = sv;
         }
-       
+
         [HttpGet("geturl")]
         public void GetUrl()
         {
             _ListingService.downLoadListing();
         }
-       
+
+
+        //this API is for testing purpose only
         [HttpGet("test")]
         public List<urlData> test()
         {
             var driver = new ChromeDriver("C:\\coding2022\\BACK-endAPI\\ListingAPI\\dataAPI");
-            //var residentialSale = "https://www.jameslaw.co.nz/residential";
-            var commercialLease = "https://www.jameslaw.co.nz/commercial-lease";
-            driver.Navigate().GoToUrl(commercialLease);
-            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 4));
-            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id='listing_grid']/div/div/div")));
+            var residentialSale = "https://www.jameslaw.co.nz/residential";
+            //var commercialLease = "https://www.jameslaw.co.nz/commercial-lease";
+            driver.Navigate().GoToUrl(residentialSale);
+            //WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 4));
+            //wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id='listing_grid']/div/div/div")));
             List<urlData> Urls = new List<urlData>();
 
-            for (int k = 1; k <= 56; k++)
+            for (int k = 1; k <= 2; k++)
             {
                 try
                 {
-                    Thread.Sleep(3000);
-                    ReadOnlyCollection<IWebElement> elements = driver.FindElements(By.CssSelector("div.button-property-icon a.btn"));                  
+                    Thread.Sleep(2000);
+                    ReadOnlyCollection<IWebElement> elements = driver.FindElements(By.CssSelector("div.button-property-icon a.btn"));
                     foreach (var j in elements)
                     {
                         var data = new urlData { id = k, url = j.GetAttribute("href") };
@@ -64,7 +66,7 @@ namespace dataAPI.Controllers
                 }
 
                 //find next page and if this the page is the last page stop find next page and click it
-                if (k < 56)
+                if (k < 2)
                 {
                     var NextPage = driver.FindElement(By.CssSelector("li.page-item a[aria-label='Next']"));
                     driver.ExecuteScript("arguments[0].click();", NextPage);
@@ -72,6 +74,44 @@ namespace dataAPI.Controllers
             }
             return Urls;
         }
-       
+        [HttpGet("detialsTesting")]
+        public void DetailTesting()
+        {
+            var driver = new ChromeDriver("C:\\coding2022\\BACK-endAPI\\ListingAPI\\dataAPI");
+            var residentialSale = "https://www.jameslaw.co.nz/property/6400";
+            driver.Navigate().GoToUrl(residentialSale);
+            Thread.Sleep(3000);
+            var Names = driver.FindElements(By.XPath("//*[@id='property']/div[16]/div[2]/div/div[2]/div[1]"));
+            var phones = driver.FindElements(By.XPath("//*[@id='property']/div[16]/div[2]/div/div[2]/a"));
+            var Contactz = new List<Contacts>();
+            foreach (var name in Names)
+            {
+                Contactz.Add(new Contacts { Contaxtsguid = Guid.NewGuid(), Name = name.Text }); ;
+            }
+            List<string> phonez = new List<string>();
+            foreach (var ph in phones)
+            {
+                phonez.Add(ph.Text);
+            }
+            var count = Contactz.Count();
+
+            for (var i = 0; i < count; i++)
+            {
+                Contactz[i].phone = phonez[i];
+            }
+
+
+            //pictures
+            var PicsData = driver.FindElements(By.XPath("//*[@id='property']/div[9]/a"));
+            var Pictures = new List<PicUrl>();
+
+            foreach (var pic in PicsData)
+            {
+                Pictures.Add(new PicUrl {Picguid = Guid.NewGuid(), PictureUrl = pic.GetAttribute("href") });
+            }
+
+            Thread.Sleep(3000);
+
+        }
     }
 }

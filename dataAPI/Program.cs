@@ -27,7 +27,7 @@ namespace dataAPI
 
 
 
-
+        /*
         private static void InsertData()
         {
             using(var context = new DB())
@@ -82,14 +82,14 @@ namespace dataAPI
                 context.Contactz.Add(new Contacts
                 {
                     Name = "Jason wang",
-                    phone = 21314211,
+                    phone = "21314211",
                     propertyDetails = property1
                 });
                 // add sales contacts 2
                 context.Contactz.Add(new Contacts
                 {
                     Name = "william tang",
-                    phone = 2141324213,
+                    phone = "22321323",
                     propertyDetails = property1
                 });
 
@@ -131,6 +131,8 @@ namespace dataAPI
 
             }
         }
+
+        */
         
     }
 }

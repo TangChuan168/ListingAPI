@@ -54,10 +54,10 @@ namespace dataAPI.Models
                 entity.Property(e => e.UpdateTime);
 
                 entity.Property(e => e.BedRoom);
-                entity.Property(e => e.Office);
-                entity.Property(e => e.LivingRoom);
-                entity.Property(e => e.Shower);
-                entity.Property(e => e.Carpark);
+                entity.Property(e => e.Study);
+                entity.Property(e => e.Couch);
+                entity.Property(e => e.Bath);
+                entity.Property(e => e.Garage);
                 entity.Property(e => e.Toilet);
 
                 entity.Property(e => e.PropertyType);

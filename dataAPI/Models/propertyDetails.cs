@@ -20,12 +20,12 @@ namespace dataAPI.Models
         public DateTime UpdateTime { get; set; }
 
         //room detials
-        public int BedRoom { get; set; }
-        public int Office { get; set; }
-        public int LivingRoom { get; set; }
-        public int Shower { get; set; }
-        public int Carpark { get; set; }
-        public int Toilet { get; set; }
+        public string BedRoom { get; set; }
+        public string Study { get; set; }
+        public string Couch { get; set; }
+        public string Bath { get; set; }
+        public string Garage { get; set; }
+        public string Toilet { get; set; }
 
         // Further Details
         public string PropertyType { get; set; }
@@ -57,7 +57,7 @@ namespace dataAPI.Models
         public Guid Contaxtsguid { get; set; }
 
         public string Name { get; set; }
-        public int phone { get; set; }
+        public string phone { get; set; }
 
         // public Guid PPDguid { get; set; }
         public virtual propertyDetails propertyDetails { get; set; }
