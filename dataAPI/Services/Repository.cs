@@ -22,12 +22,27 @@ namespace dataAPI.Services
 
         public void Add(T entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (entity == null)
+                {
+                    throw new ArgumentNullException("entity is null");
+                }
+
+                _DbSet.Add(entity);
+                _Db.SaveChanges();
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public T Create()
         {
-            throw new NotImplementedException();
+            var entity = new T();
+            return entity;
         }
 
         public Task Delete(T entity)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,15 +9,12 @@ namespace dataAPI.Models
 {
     public class propertyDetails
     {
-        [Key]
+       
         public Guid PPDguid { get; set; }
         public string heading { get; set; }
         public string AskPrice { get; set; }
         public string Address { get; set; }
         public string Descriptions { get; set; }
-        public ICollection<keyText> KeyFeatures { get; set; }
-        public ICollection<PicUrl> PictureUrls { get; set; }
-        public ICollection<Contacts> Contactz { get; set; }
         public DateTime UpdateTime { get; set; }
 
         //room detials
@@ -36,38 +34,40 @@ namespace dataAPI.Models
         public string Reference { get; set; }
 
         //reference to Listing
-        public string Guid { get; set; }
+        public Guid ListingGuid { get; set; }
         public Listing Listing { get; set; }
+
+        public virtual ICollection<keyText> Texts { get; set; }
+        public virtual ICollection<Contacts> Contactz { get; set; }
+        public virtual ICollection<PicUrl> PicUrls { get; set; }
     };
 
     public class keyText
     {
-        [Key]
+        //[Key]
         public Guid Textguid { get; set; }
         public string kText {get;set;}
         
-        //public Guid PPDguid { get; set; }
-        public virtual propertyDetails propertyDetails { get; set; }
+        public propertyDetails currentDetails { get; set; }
+       
 
     }
 
     public class Contacts
     {
-        [Key]
+        //[Key]
         public Guid Contaxtsguid { get; set; }
 
         public string Name { get; set; }
         public string phone { get; set; }
 
-        // public Guid PPDguid { get; set; }
-        public virtual propertyDetails propertyDetails { get; set; }
+        public propertyDetails currentDetails { get; set; }
     }
     public class PicUrl
     {
-        [Key]
+        //[Key]
         public Guid Picguid { get; set; }
         public string PictureUrl { get; set; }
-       // public Guid PPDguid { get; set; }
-        public virtual propertyDetails propertyDetails { get; set; }
+        public  propertyDetails propertyDetails { get; set; }
     }
 }

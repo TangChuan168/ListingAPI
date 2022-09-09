@@ -16,24 +16,25 @@ namespace dataAPI.Services
     public class ListingServices
     {
         ChromeDriver driver;
-        /*
+        
         private readonly IRepository<Listing> _ListingRepo;
         private readonly IRepository<keyText> _KeyTextRepo;
         private readonly IRepository<Contacts> _ContactsRepo;
         private readonly IRepository<PicUrl> _PicUrlRepo;
-        */
+        
         public ListingServices(
-         //IRepository<Listing> ListDB,
-         //IRepository<keyText> KeyTextDB,
-         //IRepository<Contacts> ContactsDB,
-         //IRepository<PicUrl> PicUrlDB
+         IRepository<Listing> ListDB,
+         IRepository<keyText> KeyTextDB,
+         IRepository<Contacts> ContactsDB,
+         IRepository<PicUrl> PicUrlDB
+         
 
         )
         {
-           // _ListingRepo = ListDB;
-           // _KeyTextRepo = KeyTextDB;
-           // _ContactsRepo = ContactsDB;
-           // _PicUrlRepo = PicUrlDB;
+           _ListingRepo = ListDB;
+           _KeyTextRepo = KeyTextDB;
+           _ContactsRepo = ContactsDB;
+           _PicUrlRepo = PicUrlDB;
             driver = new ChromeDriver("C:\\coding2022\\BACK-endAPI\\ListingAPI\\dataAPI");
 
         }
@@ -142,11 +143,11 @@ namespace dataAPI.Services
             return Urls;
         }
 
-        public List<Listing> getListingDetials(ChromeDriver driver,List<urlData> data)
+        public  List<Listing> getListingDetials(ChromeDriver driver,List<urlData> data)
         {
             var ListingDatas = new List<Listing>();
-            {
-                foreach (var Listing in data)
+            
+            foreach (var Listing in data)
                 {
 
                     driver.Navigate().GoToUrl(Listing.url);
@@ -208,6 +209,7 @@ namespace dataAPI.Services
                     {
 
                         KeyFeatures.Add(new keyText { kText = element.Text });
+
                     };
                     //further detials
 
@@ -250,9 +252,10 @@ namespace dataAPI.Services
                         AskPrice = AskPrice,
                         Address = Address,
                         Descriptions = Descriptions,
-                        KeyFeatures = KeyFeatures,
-                        PictureUrls = Pictures,
-                        Contactz = Contactz,
+
+                        //PicUrls = Pictures,
+                        //Contactz = Contactz,
+
                         UpdateTime = DateTime.Now,
 
                         BedRoom = bedRoom,
@@ -270,22 +273,70 @@ namespace dataAPI.Services
                         Reference = Reference
                     };
 
-                    var Listing1 = new Listing
+                    //add key features to database
+                    foreach(var ele in KeyFeatures)
+                        {
+                            var text1 = new keyText
+                            {
+                                Textguid = ele.Textguid,
+                                kText = ele.kText,
+                                currentDetails = PropertyDetials
+                            };
+
+                            _KeyTextRepo.Add(text1);
+                        }
+
+                    //add contact to database
+                    foreach (var ele in Contactz)
+                    {
+                        var contact1 = new Contacts
+                        {
+                            Contaxtsguid = ele.Contaxtsguid,
+                            Name = ele.Name,
+                            phone = ele.phone,
+                            currentDetails = PropertyDetials
+                        };
+
+                        _ContactsRepo.Add(contact1);
+                    }
+
+                    foreach (var ele in Pictures)
+                    {
+                        var pics = new PicUrl
+                        {
+                            Picguid = ele.Picguid,
+                            PictureUrl = ele.PictureUrl,
+                            propertyDetails = PropertyDetials
+                        };
+
+                        _PicUrlRepo.Add(pics);
+                    }
+
+                //add picUrl to database
+
+                var Listing1 = new Listing
                     {
                         Guid = Guid.NewGuid(),
                         Url = Listing.url,
                         IsActive = true,
                         ReType = "Residential",
                         options = "Rent",
-                        ppDetails = PropertyDetials
+                        propertyDetails = PropertyDetials
                     };
 
-                    ListingDatas.Add(Listing1);
+                
 
+                    _ListingRepo.Add(Listing1);
 
-                }             
-            }
+                    
+
+                }
+
+            
             return ListingDatas;
         }
+
+
+        
     }
 }

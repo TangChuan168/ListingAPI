@@ -36,7 +36,7 @@ namespace dataAPI.Models
                 entity.Property(e => e.IsActive);
                 entity.Property(e => e.ReType);
                 entity.Property(e => e.options);
-                entity.HasOne(x => x.ppDetails).WithOne(c => c.Listing).HasForeignKey<propertyDetails>(p => p.Guid);
+                entity.HasOne(x => x.propertyDetails).WithOne(c => c.Listing).HasForeignKey<propertyDetails>(p => p.ListingGuid);
 
             });
 
@@ -48,9 +48,9 @@ namespace dataAPI.Models
                 entity.Property(e => e.AskPrice);
                 entity.Property(e => e.Address);
                 entity.Property(e => e.Descriptions);
-                entity.Property(e => e.KeyFeatures);
-                entity.Property(e => e.PictureUrls);
-                entity.Property(e => e.Contactz);
+
+                //entity.Property(e => e.PicUrls);
+                //entity.Property(e => e.Contactz);
                 entity.Property(e => e.UpdateTime);
 
                 entity.Property(e => e.BedRoom);
@@ -67,24 +67,29 @@ namespace dataAPI.Models
                 entity.Property(e => e.FloorArea);
                 entity.Property(e => e.Reference);
 
+
             });
 
             // keyText mode
             modelBuilder.Entity<keyText>(entity =>
             {
                 entity.HasKey(e => e.Textguid);
-                entity.Property(e => e.kText);
-                entity.HasOne(d => d.propertyDetails)
-                  .WithMany(p => p.KeyFeatures);
+                entity.Property(e => e.kText).IsRequired();
+
+                entity.HasOne(d => d.currentDetails)
+                  .WithMany(p => p.Texts);
             });
+
 
             // Contacts mode
             modelBuilder.Entity<Contacts>(entity =>
             {
                 entity.HasKey(e => e.Contaxtsguid);
                 entity.Property(e => e.Name);
-                entity.HasOne(d => d.propertyDetails)
+
+                entity.HasOne(d => d.currentDetails)
                   .WithMany(p => p.Contactz);
+
             });
             // PicUrl mode
             modelBuilder.Entity<PicUrl>(entity =>
@@ -92,10 +97,9 @@ namespace dataAPI.Models
                 entity.HasKey(e => e.Picguid);
                 entity.Property(e => e.PictureUrl);
                 entity.HasOne(d => d.propertyDetails)
-                  .WithMany(p => p.PictureUrls);
+                  .WithMany(p => p.PicUrls);
+
             });
-
-
         }
 
     }
