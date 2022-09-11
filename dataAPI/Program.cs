@@ -65,13 +65,23 @@ namespace dataAPI
                     Reference = "FERE323E"
                 };
 
+                // adds Listing id= 08da9261-0043-4452-8d83-38c305b34330
+                var listing2 = new Listing
+                {
+                    Url = "www.testing1.com/helllo",
+                    IsActive = true,
+                    ReType = "residental",
+                    options = "sale",
+                    propertyDetails = property1
+                };
+
 
                 //add the 1st msg 
                 context.KeyTexts.Add(new keyText
                 {
                     Textguid = Guid.NewGuid(),
                     kText = "whatever you name it 111",
-                    currentDetails = property1
+                    Listing = listing2
 
                 }); ; ;
                 // add the 2 msg
@@ -79,7 +89,7 @@ namespace dataAPI
                 {
                     Textguid = Guid.NewGuid(),
                     kText = "whatever you name it 222",
-                    currentDetails = property1
+                    Listing = listing2
 
                 });
 
@@ -90,7 +100,7 @@ namespace dataAPI
                     Contaxtsguid = Guid.NewGuid(),
                     Name = "Jason wang",
                     phone = "21314211",
-                    currentDetails = property1
+                    Listing = listing2
                 });
                 // add sales contacts 2
                 context.Contactz.Add(new Contacts
@@ -98,7 +108,7 @@ namespace dataAPI
                     Contaxtsguid = Guid.NewGuid(),
                     Name = "william tang",
                     phone = "22321323",
-                    currentDetails = property1
+                    Listing = listing2
                 });
 
                 //add pictures url 1
@@ -106,31 +116,22 @@ namespace dataAPI
                 {
                     Picguid = Guid.NewGuid(),
                     PictureUrl ="www.forexmple1.com",
-                    propertyDetails = property1
+                    Listing = listing2
                 });
                 context.PicUrls.Add(new PicUrl
                 {
                     Picguid = Guid.NewGuid(),
                     PictureUrl = "www.forexmple2.com",
-                    propertyDetails = property1
+                    Listing = listing2
                 });
                 context.PicUrls.Add(new PicUrl
                 {
                     Picguid = Guid.NewGuid(),
                     PictureUrl = "www.forexmple3.com",
-                    propertyDetails = property1
+                    Listing = listing2
                 });
 
-                // adds Listing id= 08da9261-0043-4452-8d83-38c305b34330
-                var listing2 = new Listing
-                {
-                    tagNo = "Testing123",
-                    Url = "www.testing1.com/helllo",
-                    IsActive = true,
-                    ReType = "residental",
-                    options = "sale",
-                    propertyDetails = property1
-                };
+
                 
                 context.Details.Add(property1);
                 context.Listings.Add(listing2);

@@ -37,9 +37,7 @@ namespace dataAPI.Models
         public Guid ListingGuid { get; set; }
         public Listing Listing { get; set; }
 
-        public virtual ICollection<keyText> Texts { get; set; }
-        public virtual ICollection<Contacts> Contactz { get; set; }
-        public virtual ICollection<PicUrl> PicUrls { get; set; }
+
     };
 
     public class keyText
@@ -48,7 +46,7 @@ namespace dataAPI.Models
         public Guid Textguid { get; set; }
         public string kText {get;set;}
         
-        public propertyDetails currentDetails { get; set; }
+        public Listing Listing { get; set; }
        
 
     }
@@ -61,13 +59,13 @@ namespace dataAPI.Models
         public string Name { get; set; }
         public string phone { get; set; }
 
-        public propertyDetails currentDetails { get; set; }
+        public Listing Listing { get; set; }
     }
     public class PicUrl
     {
         //[Key]
         public Guid Picguid { get; set; }
         public string PictureUrl { get; set; }
-        public  propertyDetails propertyDetails { get; set; }
+        public Listing Listing { get; set; }
     }
 }

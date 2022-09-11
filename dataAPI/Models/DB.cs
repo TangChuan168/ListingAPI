@@ -31,7 +31,6 @@ namespace dataAPI.Models
             modelBuilder.Entity<Listing>(entity =>
             {
                 entity.HasKey(e => e.Guid);
-                entity.Property(e => e.tagNo);//.IsRequired()
                 entity.Property(e => e.Url);
                 entity.Property(e => e.IsActive);
                 entity.Property(e => e.ReType);
@@ -49,8 +48,6 @@ namespace dataAPI.Models
                 entity.Property(e => e.Address);
                 entity.Property(e => e.Descriptions);
 
-                //entity.Property(e => e.PicUrls);
-                //entity.Property(e => e.Contactz);
                 entity.Property(e => e.UpdateTime);
 
                 entity.Property(e => e.BedRoom);
@@ -67,6 +64,8 @@ namespace dataAPI.Models
                 entity.Property(e => e.FloorArea);
                 entity.Property(e => e.Reference);
 
+                
+
 
             });
 
@@ -76,7 +75,7 @@ namespace dataAPI.Models
                 entity.HasKey(e => e.Textguid);
                 entity.Property(e => e.kText).IsRequired();
 
-                entity.HasOne(d => d.currentDetails)
+                entity.HasOne(d => d.Listing)
                   .WithMany(p => p.Texts);
             });
 
@@ -87,7 +86,7 @@ namespace dataAPI.Models
                 entity.HasKey(e => e.Contaxtsguid);
                 entity.Property(e => e.Name);
 
-                entity.HasOne(d => d.currentDetails)
+                entity.HasOne(d => d.Listing)
                   .WithMany(p => p.Contactz);
 
             });
@@ -96,7 +95,7 @@ namespace dataAPI.Models
             {
                 entity.HasKey(e => e.Picguid);
                 entity.Property(e => e.PictureUrl);
-                entity.HasOne(d => d.propertyDetails)
+                entity.HasOne(d => d.Listing)
                   .WithMany(p => p.PicUrls);
 
             });

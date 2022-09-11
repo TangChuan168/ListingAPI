@@ -13,7 +13,7 @@ namespace dataAPI.Contracts
 
         Task<T> Single(Expression<Func<T, bool>> predicate);
         Task<List<T>> GetByIdAsync(object id);
-        void Add(T entity);
+        Task Add(T entity);
         Task Update(T entity);
         Task Delete(T entity);
     }

@@ -11,12 +11,15 @@ namespace dataAPI.Models
     {       
         //[Key]
         public Guid Guid { get; set; }
-        public string tagNo { get; set; }
         public string Url { get; set; }
         public bool IsActive { get; set; }
         public string ReType { get; set; }
         public string options { get; set; }
         public  propertyDetails propertyDetails { get; set; }
+
+        public virtual ICollection<keyText> Texts { get; set; }
+        public virtual ICollection<Contacts> Contactz { get; set; }
+        public virtual ICollection<PicUrl> PicUrls { get; set; }
 
     }
 }

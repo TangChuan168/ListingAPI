@@ -21,13 +21,17 @@ namespace dataAPI.Services
         private readonly IRepository<keyText> _KeyTextRepo;
         private readonly IRepository<Contacts> _ContactsRepo;
         private readonly IRepository<PicUrl> _PicUrlRepo;
-        
+        private readonly IRepository<propertyDetails> _DetailsRepo;
+
+
         public ListingServices(
          IRepository<Listing> ListDB,
          IRepository<keyText> KeyTextDB,
          IRepository<Contacts> ContactsDB,
-         IRepository<PicUrl> PicUrlDB
-         
+         IRepository<PicUrl> PicUrlDB,
+         IRepository<propertyDetails> propertyDetails
+
+
 
         )
         {
@@ -35,12 +39,13 @@ namespace dataAPI.Services
            _KeyTextRepo = KeyTextDB;
            _ContactsRepo = ContactsDB;
            _PicUrlRepo = PicUrlDB;
-            driver = new ChromeDriver("C:\\coding2022\\BACK-endAPI\\ListingAPI\\dataAPI");
+           _DetailsRepo = propertyDetails;
+           driver = new ChromeDriver("C:\\coding2022\\BACK-endAPI\\ListingAPI\\dataAPI");
 
         }
      
 
-        public List<Listing> downLoadListing()
+        public void downLoadListing()
         {
             var residentialSale = "https://www.jameslaw.co.nz/residential";
             var residentialRent = "https://www.jameslaw.co.nz/residential-rent";
@@ -52,8 +57,8 @@ namespace dataAPI.Services
             //var CommercialSale = this.getUrls(commercialSale,"commercialSale");
             //var CommercialRent = this.getUrls(commercialLease,"commercialRent");
 
-            var data= getListingDetials(driver, ResidentialSale);
-            return data;
+             getListingDetials(driver, ResidentialSale);
+            //return data;
             
         }
 
@@ -105,7 +110,7 @@ namespace dataAPI.Services
                 return driver.FindElement(By.XPath(xpath)).Text;
             }catch(Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine("$$$$$$$$$$$================================================>>>Cant find value:",e);              
                 return "";
             }           
         }
@@ -143,21 +148,29 @@ namespace dataAPI.Services
             return Urls;
         }
 
-        public  List<Listing> getListingDetials(ChromeDriver driver,List<urlData> data)
+        public async void getListingDetials(ChromeDriver driver,List<urlData> data)
         {
-            var ListingDatas = new List<Listing>();
+            //var ListingDatas = new List<Listing>();
             
             foreach (var Listing in data)
-                {
+            {
 
                     driver.Navigate().GoToUrl(Listing.url);
-                    Thread.Sleep(3500);
-                    //WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 4));
-                    //wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[@id='property']/div[9]")));
+                Console.WriteLine("#####################################----------URL", Listing.url);
 
-                    var Heading = driver.FindElement(By.XPath("//*[@id='home']/div[1]/div[1]")).Text;
+                    Thread.Sleep(500);
+                    // closing floating ads
+                    try {
+                        driver.FindElement(By.XPath("//*[@id='youtubeVideoModal']/div/div/span/i")).Click();
+                    }
+                    catch(Exception e) 
+                    {
+                        Console.WriteLine(e);
+                    }
+                    Thread.Sleep(5000);
+                    var Address = driver.FindElement(By.XPath("//*[@id='home']/div[1]/div[1]")).Text;
                     var AskPrice = driver.FindElement(By.XPath("//*[@id=\"home\"]/div[1]/div[2]/span[1]")).Text;
-                    var Address = driver.FindElement(By.XPath("//*[@id=\"property\"]/div[1]/div/div")).Text;
+                    var Heading = driver.FindElement(By.XPath("//*[@id=\"property\"]/div[1]/div/div")).Text;
                     var Descriptions = driver.FindElement(By.XPath("//*[@id=\"property\"]/div[2]/div[1]/div[2]")).Text;
 
                     string bedRoom ="";
@@ -208,7 +221,7 @@ namespace dataAPI.Services
                     foreach (var element in Features)
                     {
 
-                        KeyFeatures.Add(new keyText { kText = element.Text });
+                        KeyFeatures.Add(new keyText {Textguid= Guid.NewGuid(), kText = element.Text });
 
                     };
                     //further detials
@@ -238,13 +251,12 @@ namespace dataAPI.Services
                     var PicsData = driver.FindElements(By.XPath("//*[@id='property']/div[9]/a"));
                     var Pictures = new List<PicUrl>();
 
-                    foreach (var pic in PicsData)
-                    {
-                        Pictures.Add(new PicUrl { Picguid = Guid.NewGuid(), PictureUrl = pic.GetAttribute("href") });
-                    }
+                     foreach (var pic in PicsData)
+                        {
+                            Pictures.Add(new PicUrl { Picguid = Guid.NewGuid(), PictureUrl = pic.GetAttribute("href") });
+                        }
 
                     //add all values to Model
-
                     var PropertyDetials = new propertyDetails
                     {
                         PPDguid = Guid.NewGuid(),
@@ -252,9 +264,6 @@ namespace dataAPI.Services
                         AskPrice = AskPrice,
                         Address = Address,
                         Descriptions = Descriptions,
-
-                        //PicUrls = Pictures,
-                        //Contactz = Contactz,
 
                         UpdateTime = DateTime.Now,
 
@@ -270,23 +279,37 @@ namespace dataAPI.Services
                         SaleMethod = SaleMethod,
                         OpenHomeSessions = OpenHomeSessions,
                         FloorArea = FloorArea,
-                        Reference = Reference
-                    };
-
-                    //add key features to database
-                    foreach(var ele in KeyFeatures)
+                        Reference = Reference,
+                    
+                        
+                        };
+                    //add listing
+                    var Listing1 = new Listing
                         {
-                            var text1 = new keyText
-                            {
-                                Textguid = ele.Textguid,
-                                kText = ele.kText,
-                                currentDetails = PropertyDetials
-                            };
+                            Guid = Guid.NewGuid(),
+                            Url = Listing.url,
+                            IsActive = true,
+                            ReType = "Residential",
+                            options = "Sale",
+                            propertyDetails = PropertyDetials
+                        };
+                
 
-                            _KeyTextRepo.Add(text1);
-                        }
 
-                    //add contact to database
+                        //add key features to database
+                    foreach (var ele in KeyFeatures)
+                                {
+                                    var text1 = new keyText
+                                    {
+                                        Textguid = ele.Textguid,
+                                        kText = ele.kText,
+                                        Listing = Listing1
+                                    };
+
+                                  await  _KeyTextRepo.Add(text1);
+                                }
+
+                        //add contact to database
                     foreach (var ele in Contactz)
                     {
                         var contact1 = new Contacts
@@ -294,49 +317,31 @@ namespace dataAPI.Services
                             Contaxtsguid = ele.Contaxtsguid,
                             Name = ele.Name,
                             phone = ele.phone,
-                            currentDetails = PropertyDetials
+                            Listing = Listing1
                         };
 
-                        _ContactsRepo.Add(contact1);
+                       await _ContactsRepo.Add(contact1);
                     }
+
+                    //add picUrl to database
 
                     foreach (var ele in Pictures)
-                    {
-                        var pics = new PicUrl
                         {
-                            Picguid = ele.Picguid,
-                            PictureUrl = ele.PictureUrl,
-                            propertyDetails = PropertyDetials
-                        };
+                            var pics = new PicUrl
+                            {
+                                Picguid = ele.Picguid,
+                                PictureUrl = ele.PictureUrl,
+                                Listing = Listing1
+                            };
 
-                        _PicUrlRepo.Add(pics);
-                    }
+                          await  _PicUrlRepo.Add(pics);
+                        }
 
-                //add picUrl to database
-
-                var Listing1 = new Listing
-                    {
-                        Guid = Guid.NewGuid(),
-                        Url = Listing.url,
-                        IsActive = true,
-                        ReType = "Residential",
-                        options = "Rent",
-                        propertyDetails = PropertyDetials
-                    };
-
-                
-
-                    _ListingRepo.Add(Listing1);
-
-                    
-
-                }
-
-            
-            return ListingDatas;
-        }
-
-
-        
+                //await _DetailsRepo.Add(PropertyDetials);
+                //await _ListingRepo.Add(Listing1);
+            }
+            //return home page;
+            driver.Navigate().GoToUrl("https://www.jameslaw.co.nz/residential");
+        }    
     }
 }

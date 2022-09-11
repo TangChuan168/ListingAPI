@@ -20,24 +20,6 @@ namespace dataAPI.Services
             _DbSet = _Db.Set<T>();
         }
 
-        public void Add(T entity)
-        {
-            try
-            {
-                if (entity == null)
-                {
-                    throw new ArgumentNullException("entity is null");
-                }
-
-                _DbSet.Add(entity);
-                _Db.SaveChanges();
-
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
 
         public T Create()
         {
@@ -68,6 +50,25 @@ namespace dataAPI.Services
         public Task Update(T entity)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task Add(T entity)
+        {
+            try
+            {
+                if (entity == null)
+                {
+                    throw new ArgumentNullException("entity is null");
+                }
+
+                await _DbSet.AddAsync(entity);
+                _Db.SaveChanges();
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
