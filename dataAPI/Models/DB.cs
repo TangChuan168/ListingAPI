@@ -73,7 +73,7 @@ namespace dataAPI.Models
             modelBuilder.Entity<keyText>(entity =>
             {
                 entity.HasKey(e => e.Textguid);
-                entity.Property(e => e.kText).IsRequired();
+                entity.Property(e => e.kText);
 
                 entity.HasOne(d => d.Listing)
                   .WithMany(p => p.Texts);

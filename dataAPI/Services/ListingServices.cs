@@ -48,6 +48,7 @@ namespace dataAPI.Services
         public void downLoadListing()
         {
             var residentialSale = "https://www.jameslaw.co.nz/residential";
+
             var residentialRent = "https://www.jameslaw.co.nz/residential-rent";
             var commercialSale = "https://www.jameslaw.co.nz/commercial-sale";
             var commercialLease = "https://www.jameslaw.co.nz/commercial-lease";
@@ -57,9 +58,8 @@ namespace dataAPI.Services
             //var CommercialSale = this.getUrls(commercialSale,"commercialSale");
             //var CommercialRent = this.getUrls(commercialLease,"commercialRent");
 
-             getListingDetials(driver, ResidentialSale);
-            //return data;
-            
+            getListingDetials(driver, ResidentialSale);
+                      
         }
 
         public List<urlData> getUrls(string url, string types)
@@ -110,7 +110,8 @@ namespace dataAPI.Services
                 return driver.FindElement(By.XPath(xpath)).Text;
             }catch(Exception e)
             {
-                Console.WriteLine("$$$$$$$$$$$================================================>>>Cant find value:",e);              
+                Console.WriteLine("================================================>>>Cant find value:");
+                Console.WriteLine(e);
                 return "";
             }           
         }
@@ -156,9 +157,10 @@ namespace dataAPI.Services
             {
 
                     driver.Navigate().GoToUrl(Listing.url);
-                Console.WriteLine("#####################################----------URL", Listing.url);
+                    Console.WriteLine("#####################################----------URL");
+                    Console.WriteLine(Listing.url);
 
-                    Thread.Sleep(500);
+                Thread.Sleep(500);
                     // closing floating ads
                     try {
                         driver.FindElement(By.XPath("//*[@id='youtubeVideoModal']/div/div/span/i")).Click();
@@ -293,8 +295,8 @@ namespace dataAPI.Services
                             options = "Sale",
                             propertyDetails = PropertyDetials
                         };
-                
 
+                    await _ListingRepo.Add(Listing1);
 
                         //add key features to database
                     foreach (var ele in KeyFeatures)
@@ -339,7 +341,9 @@ namespace dataAPI.Services
 
                 //await _DetailsRepo.Add(PropertyDetials);
                 //await _ListingRepo.Add(Listing1);
+                //ListingDatas.Add(Listing1);
             }
+
             //return home page;
             driver.Navigate().GoToUrl("https://www.jameslaw.co.nz/residential");
         }    
