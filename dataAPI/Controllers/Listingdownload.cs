@@ -28,10 +28,28 @@ namespace dataAPI.Controllers
             _ListingService = sv;
         }
 
-        [HttpGet("geturl")]
-        public void GetUrl()
+        [HttpGet("getResidentialSale")]
+        public void getResidentialSale()
         {
-            _ListingService.downLoadListing();
+            _ListingService.ResidentialListingSale();
+        }
+
+        [HttpGet("getResidentialRent")]
+        public void getResidentialRent()
+        {
+            _ListingService.ResidentialListringRent();
+        }
+
+        [HttpGet("getCommercialSale")]
+        public void getCommercialSale()
+        {
+            _ListingService.CommercialListringSale();
+        }
+
+        [HttpGet("getCommercialLease")]
+        public void getCommercialLease()
+        {
+            _ListingService.CommercialListringLease();
         }
 
 
@@ -55,7 +73,9 @@ namespace dataAPI.Controllers
                     ReadOnlyCollection<IWebElement> elements = driver.FindElements(By.CssSelector("div.button-property-icon a.btn"));
                     foreach (var j in elements)
                     {
-                        var data = new urlData { id = k, url = j.GetAttribute("href") };
+                        var tagNoSet = j.GetAttribute("href").Split('/');
+                        var tagNo = Int32.Parse(tagNoSet[4]);
+                        var data = new urlData { id = tagNo, url = j.GetAttribute("href") };
                         Urls.Add(data);
                     }
                 }
@@ -74,7 +94,7 @@ namespace dataAPI.Controllers
             }
             return Urls;
         }
-        [HttpGet("detialsTesting")]
+        [HttpGet("detialsTesting")] 
         public void DetailTesting()
         {
             var driver = new ChromeDriver("C:\\coding2022\\BACK-endAPI\\ListingAPI\\dataAPI");

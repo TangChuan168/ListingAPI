@@ -16,13 +16,12 @@ namespace dataAPI.Services
     public class ListingServices
     {
         ChromeDriver driver;
-        
-        private readonly IRepository<Listing> _ListingRepo;
-        private readonly IRepository<keyText> _KeyTextRepo;
-        private readonly IRepository<Contacts> _ContactsRepo;
-        private readonly IRepository<PicUrl> _PicUrlRepo;
-        private readonly IRepository<propertyDetails> _DetailsRepo;
 
+        protected  IRepository<Listing> _ListingRepo;
+        protected  IRepository<keyText> _KeyTextRepo;
+        protected  IRepository<Contacts> _ContactsRepo;
+        protected  IRepository<PicUrl> _PicUrlRepo;
+        protected  IRepository<propertyDetails> _DetailsRepo;
 
         public ListingServices(
          IRepository<Listing> ListDB,
@@ -30,9 +29,6 @@ namespace dataAPI.Services
          IRepository<Contacts> ContactsDB,
          IRepository<PicUrl> PicUrlDB,
          IRepository<propertyDetails> propertyDetails
-
-
-
         )
         {
            _ListingRepo = ListDB;
@@ -41,25 +37,35 @@ namespace dataAPI.Services
            _PicUrlRepo = PicUrlDB;
            _DetailsRepo = propertyDetails;
            driver = new ChromeDriver("C:\\coding2022\\BACK-endAPI\\ListingAPI\\dataAPI");
-
         }
-     
-
-        public void downLoadListing()
+   
+        public void ResidentialListingSale()
         {
             var residentialSale = "https://www.jameslaw.co.nz/residential";
-
-            var residentialRent = "https://www.jameslaw.co.nz/residential-rent";
-            var commercialSale = "https://www.jameslaw.co.nz/commercial-sale";
-            var commercialLease = "https://www.jameslaw.co.nz/commercial-lease";
-
             var ResidentialSale = this.getUrls(residentialSale,"residencialSale");
-            //var ResidentialRent = this.getUrls(residentialRent,"residencialRent");
-            //var CommercialSale = this.getUrls(commercialSale,"commercialSale");
-            //var CommercialRent = this.getUrls(commercialLease,"commercialRent");
-
-            getListingDetials(driver, ResidentialSale);
+            getListingDetials(driver, ResidentialSale, "ResidentialSale");
                       
+        }
+
+        public void ResidentialListringRent()
+        {
+            var residentialRent = "https://www.jameslaw.co.nz/residential-rent";
+            var ResidentialRent = this.getUrls(residentialRent, "residencialRent");
+            getListingDetials(driver,ResidentialRent, "ResidentialRent");
+        }
+
+        public void CommercialListringSale()
+        {
+            var commercialSale = "https://www.jameslaw.co.nz/commercial-sale";
+            var CommercialSale = this.getUrls(commercialSale,"commercialSale");
+            getListingDetials(driver, CommercialSale, "CommercialSale");
+        }
+
+        public void CommercialListringLease()
+        {
+            var commercialLease = "https://www.jameslaw.co.nz/commercial-lease";
+            var CommercialLease = this.getUrls(commercialLease, "commercialSale");
+            getListingDetials(driver, CommercialLease, "CommercialLease");
         }
 
         public List<urlData> getUrls(string url, string types)
@@ -128,7 +134,10 @@ namespace dataAPI.Services
                     ReadOnlyCollection<IWebElement> elements = driver.FindElements(By.CssSelector("div.button-property-icon a.btn"));
                     foreach (var j in elements)
                     {
-                        var data = new urlData { id = k, url = j.GetAttribute("href") };
+                        var tagNoSet = j.GetAttribute("href").Split('/');
+                        var tagNo = Int32.Parse(tagNoSet[4]);
+                        var lastNo = tagNo % 10;
+                        var data = new urlData { id = k, url = j.GetAttribute("href"), tagId = tagNo,lastDigit = lastNo };
                         Urls.Add(data);
                     }
                 }
@@ -149,7 +158,7 @@ namespace dataAPI.Services
             return Urls;
         }
 
-        public async void getListingDetials(ChromeDriver driver,List<urlData> data)
+        public async void getListingDetials(ChromeDriver driver,List<urlData> data,string types)
         {
             //var ListingDatas = new List<Listing>();
             
@@ -169,7 +178,7 @@ namespace dataAPI.Services
                     {
                         Console.WriteLine(e);
                     }
-                    Thread.Sleep(5000);
+                    Thread.Sleep(4000);
                     var Address = driver.FindElement(By.XPath("//*[@id='home']/div[1]/div[1]")).Text;
                     var AskPrice = driver.FindElement(By.XPath("//*[@id=\"home\"]/div[1]/div[2]/span[1]")).Text;
                     var Heading = driver.FindElement(By.XPath("//*[@id=\"property\"]/div[1]/div/div")).Text;
@@ -248,7 +257,6 @@ namespace dataAPI.Services
                     {
                         Contactz[i].phone = phonez[i];
                     }
-
                     //pictures
                     var PicsData = driver.FindElements(By.XPath("//*[@id='property']/div[9]/a"));
                     var Pictures = new List<PicUrl>();
@@ -257,17 +265,14 @@ namespace dataAPI.Services
                         {
                             Pictures.Add(new PicUrl { Picguid = Guid.NewGuid(), PictureUrl = pic.GetAttribute("href") });
                         }
-
                     //add all values to Model
                     var PropertyDetials = new propertyDetails
                     {
                         PPDguid = Guid.NewGuid(),
-                        heading = Heading,
+                        Heading = Heading,
                         AskPrice = AskPrice,
                         Address = Address,
                         Descriptions = Descriptions,
-
-                        UpdateTime = DateTime.Now,
 
                         BedRoom = bedRoom,
                         Couch = couch,
@@ -281,21 +286,22 @@ namespace dataAPI.Services
                         SaleMethod = SaleMethod,
                         OpenHomeSessions = OpenHomeSessions,
                         FloorArea = FloorArea,
-                        Reference = Reference,
-                    
-                        
+                        Reference = Reference,                                           
                         };
+                    
                     //add listing
                     var Listing1 = new Listing
                         {
                             Guid = Guid.NewGuid(),
                             Url = Listing.url,
+                            TagNum = Listing.tagId,
+                            LastDigit = Listing.lastDigit,
                             IsActive = true,
-                            ReType = "Residential",
-                            options = "Sale",
+                            ReType = types,
+                            UpdateTime = DateTime.Now,
                             propertyDetails = PropertyDetials
                         };
-
+                    
                     await _ListingRepo.Add(Listing1);
 
                         //add key features to database
@@ -310,7 +316,6 @@ namespace dataAPI.Services
 
                                   await  _KeyTextRepo.Add(text1);
                                 }
-
                         //add contact to database
                     foreach (var ele in Contactz)
                     {
@@ -324,9 +329,7 @@ namespace dataAPI.Services
 
                        await _ContactsRepo.Add(contact1);
                     }
-
                     //add picUrl to database
-
                     foreach (var ele in Pictures)
                         {
                             var pics = new PicUrl

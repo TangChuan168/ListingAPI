@@ -38,6 +38,7 @@ namespace dataAPI
             services.AddScoped<Contacts>();
             services.AddScoped<PicUrl>();
             services.AddScoped<ListingServices>();
+            services.AddScoped<UpdateServices>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "dataAPI", Version = "v1" });

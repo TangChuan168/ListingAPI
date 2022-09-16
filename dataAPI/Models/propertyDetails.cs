@@ -11,11 +11,10 @@ namespace dataAPI.Models
     {
        
         public Guid PPDguid { get; set; }
-        public string heading { get; set; }
+        public string Heading { get; set; }
         public string AskPrice { get; set; }
         public string Address { get; set; }
         public string Descriptions { get; set; }
-        public DateTime UpdateTime { get; set; }
 
         //room detials
         public string BedRoom { get; set; }
@@ -44,21 +43,17 @@ namespace dataAPI.Models
     {
         //[Key]
         public Guid Textguid { get; set; }
-        public string kText {get;set;}
-        
+        public string kText {get;set;}        
         public Listing Listing { get; set; }
        
-
     }
 
     public class Contacts
     {
         //[Key]
         public Guid Contaxtsguid { get; set; }
-
         public string Name { get; set; }
         public string phone { get; set; }
-
         public Listing Listing { get; set; }
     }
     public class PicUrl

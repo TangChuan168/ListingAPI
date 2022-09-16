@@ -25,30 +25,22 @@ namespace dataAPI
                 {
                     webBuilder.UseStartup<Startup>();
                 });
-
-
-
         
         private static void InsertData()
         {
             using(var context = new DB())
             {
                 //Creates the database if not exists
-
                 context.Database.EnsureCreated();
-
                 var datatime1 = DateTime.Now;
 
-                // add property Details class id=f169c5c3-ab11-403d-9d9c-557045c0e7c4
                 var property1 = new propertyDetails
                 {
                     PPDguid = Guid.NewGuid(),
-                    heading = " william NO 1",
+                    Heading = " william NO 1",
                     AskPrice = "8888,888",
                     Address = "109 campbell rd/auckland",
                     Descriptions = "this is testing area from 1 st time testing",
-
-                    UpdateTime = datatime1,
 
                     BedRoom = "4",
                     Study = "3",
@@ -64,18 +56,18 @@ namespace dataAPI
                     FloorArea = "123*23",
                     Reference = "FERE323E"
                 };
-
-                // adds Listing id= 08da9261-0043-4452-8d83-38c305b34330
+                
                 var listing2 = new Listing
                 {
                     Url = "www.testing1.com/helllo",
                     IsActive = true,
                     ReType = "residental",
-                    options = "sale",
+                    UpdateTime = DateTime.Now,
+                    TagNum = 123,
+                    LastDigit = 9,
                     propertyDetails = property1
+                    
                 };
-
-
                 //add the 1st msg 
                 context.KeyTexts.Add(new keyText
                 {
@@ -92,8 +84,6 @@ namespace dataAPI
                     Listing = listing2
 
                 });
-
-
                 // add sales contacts 1
                 context.Contactz.Add(new Contacts
                 {
@@ -129,21 +119,12 @@ namespace dataAPI
                     Picguid = Guid.NewGuid(),
                     PictureUrl = "www.forexmple3.com",
                     Listing = listing2
-                });
-
-
-                
+                });            
                 context.Details.Add(property1);
                 context.Listings.Add(listing2);
-
-
                 //save changes
                 context.SaveChanges();
-
-
             }
-        }
-
-        
+        }       
     }
 }

@@ -29,16 +29,19 @@ namespace dataAPI.Services
 
         public Task Delete(T entity)
         {
+            //await _DbSet.DeleteOneAsync(w => w.Id.Equals(entity.Id));
             throw new NotImplementedException();
         }
 
-        public Task<List<T>> getAll(Expression<Func<T, bool>> predicate)
+        public IEnumerable<T> getAll(Expression<Func<T, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return _DbSet.AsQueryable().Where(predicate).AsEnumerable();
+                
         }
 
         public Task<List<T>> GetByIdAsync(object id)
         {
+            //return  _DbSet.Find(x => x. == id.ToString()).FirstOrDefault();
             throw new NotImplementedException();
         }
 
@@ -47,9 +50,21 @@ namespace dataAPI.Services
             throw new NotImplementedException();
         }
 
-        public Task Update(T entity)
+        public async Task Update(T entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (entity == null)
+                {
+                    throw new ArgumentNullException("entity");
+                }
+                //await _DbSet.ReplaceOneAsync(w => w.Id.Equals(entity.Id),
+                    //entity, new UpdateOptions { IsUpsert = true });
+            }
+            catch (Exception dbEx)
+            {
+                throw dbEx;
+            }
         }
 
         public async Task Add(T entity)
@@ -67,7 +82,7 @@ namespace dataAPI.Services
             }
             catch (Exception)
             {
-                throw;
+                throw new ArgumentNullException("exception db"); ;
             }
         }
     }

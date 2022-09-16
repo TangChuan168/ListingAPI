@@ -9,8 +9,7 @@ namespace dataAPI.Contracts
     public interface IRepository<T>
     {
         T Create();
-        Task<List<T>> getAll(Expression<Func<T, bool>> predicate);
-
+        IEnumerable<T> getAll(Expression<Func<T, bool>> predicate);
         Task<T> Single(Expression<Func<T, bool>> predicate);
         Task<List<T>> GetByIdAsync(object id);
         Task Add(T entity);

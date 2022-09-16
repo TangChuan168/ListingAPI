@@ -12,9 +12,11 @@ namespace dataAPI.Models
         //[Key]
         public Guid Guid { get; set; }
         public string Url { get; set; }
+        public int TagNum { get; set; }
+        public int LastDigit { get; set; }
         public bool IsActive { get; set; }
         public string ReType { get; set; }
-        public string options { get; set; }
+        public DateTime UpdateTime { get; set; }
         public  propertyDetails propertyDetails { get; set; }
 
         public virtual ICollection<keyText> Texts { get; set; }

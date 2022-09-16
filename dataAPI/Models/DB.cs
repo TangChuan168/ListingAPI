@@ -32,9 +32,11 @@ namespace dataAPI.Models
             {
                 entity.HasKey(e => e.Guid);
                 entity.Property(e => e.Url);
+                entity.Property(e => e.LastDigit);
+                entity.Property(e => e.TagNum);
                 entity.Property(e => e.IsActive);
                 entity.Property(e => e.ReType);
-                entity.Property(e => e.options);
+                entity.Property(e => e.UpdateTime);
                 entity.HasOne(x => x.propertyDetails).WithOne(c => c.Listing).HasForeignKey<propertyDetails>(p => p.ListingGuid);
 
             });
@@ -43,12 +45,10 @@ namespace dataAPI.Models
             modelBuilder.Entity<propertyDetails>(entity =>
             {
                 entity.HasKey(e => e.PPDguid);
-                entity.Property(e => e.heading);
+                entity.Property(e => e.Heading);
                 entity.Property(e => e.AskPrice);
                 entity.Property(e => e.Address);
                 entity.Property(e => e.Descriptions);
-
-                entity.Property(e => e.UpdateTime);
 
                 entity.Property(e => e.BedRoom);
                 entity.Property(e => e.Study);
